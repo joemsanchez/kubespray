@@ -1,0 +1,97 @@
+diff -ru kubespray/inventory/sample/group_vars/all/all.yml kubespray/inventory/cluster/group_vars/all/all.yml
+--- kubespray/inventory/sample/group_vars/all/all.yml	2019-08-23 18:55:40.778166862 +0000
++++ kubespray/inventory/cluster/group_vars/all/all.yml	2019-08-23 22:15:32.615051239 +0000
+@@ -62,7 +62,7 @@
+ ## Some problems may occur when downloading files over https proxy due to ansible bug
+ ## https://github.com/ansible/ansible/issues/32750. Set this variable to False to disable
+ ## SSL validation of get_url module. Note that kubespray will still be performing checksum validation.
+-# download_validate_certs: False
++download_validate_certs: False
+ 
+ ## If you need exclude all cluster nodes from proxy and other resources, add other resources here.
+ # additional_no_proxy: ""
+@@ -81,7 +81,7 @@
+ # kube_read_only_port: 10255
+ 
+ ## Set true to download and cache container
+-# download_container: true
++#download_container: false
+ 
+ ## Deploy container engine
+ # Set false if you want to deploy container engine manually.
+diff -ru kubespray/inventory/sample/group_vars/all/docker.yml kubespray/inventory/cluster/group_vars/all/docker.yml
+--- kubespray/inventory/sample/group_vars/all/docker.yml	2019-08-23 18:55:40.782166864 +0000
++++ kubespray/inventory/cluster/group_vars/all/docker.yml	2019-08-23 18:56:08.102177316 +0000
+@@ -17,7 +17,7 @@
+ docker_daemon_graph: "/var/lib/docker"
+ 
+ ## Used to set docker daemon iptables options to true
+-docker_iptables_enabled: "false"
++docker_iptables_enabled: "true"
+ 
+ # Docker log options
+ # Rotate container stderr/stdout logs at 50m and keep last 5
+diff -ru kubespray/inventory/sample/group_vars/k8s-cluster/addons.yml kubespray/inventory/cluster/group_vars/k8s-cluster/addons.yml
+--- kubespray/inventory/sample/group_vars/k8s-cluster/addons.yml	2019-08-23 18:55:40.782166864 +0000
++++ kubespray/inventory/cluster/group_vars/k8s-cluster/addons.yml	2019-08-23 22:45:19.558495816 +0000
+@@ -1,10 +1,10 @@
+ ---
+ # Kubernetes dashboard
+ # RBAC required. see docs/getting-started.md for access details.
+-dashboard_enabled: true
++dashboard_enabled: false
+ 
+ # Helm deployment
+-helm_enabled: false
++helm_enabled: true
+ 
+ # Registry deployment
+ registry_enabled: false
+@@ -29,7 +29,7 @@
+ # local_path_provisioner_image_tag: "v0.0.2"
+ 
+ # Local volume provisioner deployment
+-local_volume_provisioner_enabled: false
++local_volume_provisioner_enabled: true
+ # local_volume_provisioner_namespace: kube-system
+ # local_volume_provisioner_storage_classes:
+ #   local-storage:
+@@ -76,16 +76,17 @@
+ # rbd_provisioner_reclaim_policy: Delete
+ 
+ # Nginx ingress controller deployment
+-ingress_nginx_enabled: false
+-# ingress_nginx_host_network: false
+-# ingress_nginx_nodeselector:
++ingress_nginx_enabled: true
++ingress_nginx_host_network: true
++ingress_nginx_nodeselector:
++  node-role.kubernetes.io/master: ""
+ #   beta.kubernetes.io/os: "linux": ""
+-# ingress_nginx_tolerations:
+-#   - key: "node-role.kubernetes.io/master"
+-#     operator: "Equal"
+-#     value: ""
+-#     effect: "NoSchedule"
+-# ingress_nginx_namespace: "ingress-nginx"
++ingress_nginx_tolerations:
++  - key: "node-role.kubernetes.io/master"
++    operator: "Equal"
++    value: ""
++    effect: "NoSchedule"
++ingress_nginx_namespace: "ingress-nginx"
+ # ingress_nginx_insecure_port: 80
+ # ingress_nginx_secure_port: 443
+ # ingress_nginx_configmap:
+diff -ru kubespray/inventory/sample/group_vars/k8s-cluster/k8s-cluster.yml kubespray/inventory/cluster/group_vars/k8s-cluster/k8s-cluster.yml
+--- kubespray/inventory/sample/group_vars/k8s-cluster/k8s-cluster.yml	2019-08-23 18:55:40.782166864 +0000
++++ kubespray/inventory/cluster/group_vars/k8s-cluster/k8s-cluster.yml	2019-08-23 18:56:08.102177316 +0000
+@@ -132,7 +132,7 @@
+ # Set manual server if using a custom cluster DNS server
+ # manual_dns_server: 10.x.x.x
+ # Enable nodelocal dns cache
+-enable_nodelocaldns: true
++enable_nodelocaldns: false
+ nodelocaldns_ip: 169.254.25.10
+ 
+ # Can be docker_dns, host_resolvconf or none
